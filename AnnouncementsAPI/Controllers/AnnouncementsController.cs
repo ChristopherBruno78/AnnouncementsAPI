@@ -6,11 +6,7 @@ namespace AnnouncementsAPI.Controllers;
 [Route("[controller]")]
 public class AnnouncementsController : ControllerBase
 {
-    private static readonly string[] Summaries = new[]
-    {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
-
+    private readonly AnnouncementsRepository _repository = new AnnouncementsRepository();
     private readonly ILogger<AnnouncementsController> _logger;
 
     public AnnouncementsController(ILogger<AnnouncementsController> logger)
@@ -18,15 +14,35 @@ public class AnnouncementsController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet(Name = "GetWeatherForecast")]
-    public IEnumerable<Announcements> Get()
+    [HttpPut(Name = "UpdateAnnouncement")]
+    public bool Update(Guid id, string author, string subject, string content)
     {
-        return Enumerable.Range(1, 5).Select(index => new Announcements
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+        var announcement = _repository.GetAnnouncement(id);
+        if (announcement == null) return false;
+        announcement.Author = author;
+        announcement.Subject = subject;
+        announcement.BodyContent = content;
+        return _repository.UpdateAnnouncement(announcement); 
+    }
+
+    [HttpDelete(Name = "DeleteAnnouncement")]
+    public bool Delete(Guid id)
+    {
+        var announcement = _repository.GetAnnouncement(id);
+        return announcement != null && _repository.DeleteAnnouncement(announcement);
+    }
+
+    [HttpPost(Name = "CreateAnnouncement")]
+    public Announcement Create(string author, string subject, string content)
+    {
+        var announcement = new Announcement(author, subject, content); 
+        _repository.AddAnnouncement(announcement);
+        return announcement;
+    }
+
+    [HttpGet(Name = "GetAnnouncements")]
+    public IEnumerable<Announcement> Get(int start, int length)
+    {
+        return _repository.GetAnnouncements(start, length);
     }
 }
