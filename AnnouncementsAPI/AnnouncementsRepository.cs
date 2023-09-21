@@ -4,7 +4,7 @@ public class AnnouncementsRepository
 {
     /**
      *  For the sample code, using a volatile data structure as
-     *  data repository. In real world, this would be use the respoitory
+     *  data repository. In the real world, this would use the repository
      *  pattern to connect to a real database for persistence.
      */
     private static readonly SortedList<Guid, Announcement> Data = new SortedList<Guid, Announcement>();

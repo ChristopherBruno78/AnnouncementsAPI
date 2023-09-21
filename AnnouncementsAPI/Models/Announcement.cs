@@ -2,9 +2,6 @@ namespace AnnouncementsAPI;
 
 public class Announcement
 {
-
-    private static int _idNum;
-    
     public Announcement(string author, string subject, string content)
     {
         Id = Guid.NewGuid();
